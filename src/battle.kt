@@ -2,19 +2,26 @@ package EverCraft.Battle
 
 import EverCraft.Character.*
 
-public fun run(char1: Character, char2: Character)
+public fun run(characters: List<Character>)
 {
-    runRound(char1, char2)
+    runRound(initiativeOrder(characters))
 }
 
-private fun runRound(attacker: Character, defender: Character)
+private fun runRound(characters: List<Character>)
 {
-    attacker.attack(defender)
-    if (charactersAlive(attacker, defender)) runRound(defender, attacker)
+    val first = characters.first()
+    val last = characters.last()
+    first.attack(last)
+    while (charactersAlive(characters))
+        runRound(listOf(last, first))
 }
 
-private fun charactersAlive(vararg characters: Character) : Boolean
+private fun charactersAlive(characters: List<Character>) : Boolean
 {
     return characters map { c -> c.alive() } reduce { (x: Boolean, y: Boolean) -> x && y }
 }
 
+private fun initiativeOrder(characters: List<Character>) : List<Character>
+{
+    return characters.sortBy { char -> char.rollDice() }
+}
